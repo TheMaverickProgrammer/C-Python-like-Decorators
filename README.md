@@ -190,7 +190,8 @@ We can let the function silently fail and we can choose to supply another decora
 ```
 auto read_safe = exception_fail_safe(file_read);
 
-if(read_safe("missing_file.txt", buff, &sz).compare("OK")) {
+if(!read_safe("missing_file.txt", buff, &sz).compare("OK")) {
+    // Whoops! We needed this file. Quit immediately!
     app.abort();
     return;
 }
@@ -204,5 +205,14 @@ decorated_functor d = smart_divide(divide);
 
 // reassignment
 d = stars(output(d));
+```
 
-Though assignment of arbitrary types is almost next to impossible without type erasure and as we discovered at the beginning, lambdas do not dissolve into C++ pointers as we might expect making this task non-trivial.
+Unlike python, assignment of arbitrary types in C++ is almost next to impossible without type erasure.
+We solved this by using templates but every new nested function returns a new type that the compiler sees.
+And as we discovered at the beginning, lambdas with capture do not dissolve into C++ pointers as we might expect either. 
+
+With all the complexities at hand, this task non-trivial. 
+
+Additionally, there's no nice syntax at hand for C++ to wrap a function around another at definition without the use of magic macros or mocs. We're left to wrap functions at run-time.
+
+This challenge took about 2 days plugged in and was a lot of fun. I learned a lot on the way and discovered something pretty useful. Thanks for reading!
