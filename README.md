@@ -45,7 +45,7 @@ This is a really nice feature for python that, as a C++ enthusiast, I would like
 # Accepting any arbitrary functor in modern C++
 Python decorator functions take in a _function_ as its argument. I toyed with a variety of concepts and discovered quickly that lambdas are not as versatile as I had hoped they would be. Consider the following code:
 
-https://godbolt.org/z/R1SCY0
+https://godbolt.org/z/vxEJI3
 
 ```
 template<typename R, typename... Args>
