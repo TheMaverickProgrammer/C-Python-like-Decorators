@@ -1,6 +1,8 @@
 # C-Python-like-Decorators
 How to write decorator functions in modern C++14 or higher
 
+Works across MSVC, GNU CC, and Clang compilers
+
 ## Skip the tutorial and view the final results 
 
 ### Tutorial demo
