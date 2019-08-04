@@ -5,18 +5,18 @@ Works across MSVC, GNU CC, and Clang compilers
 
 ## Skip the tutorial and view the final results 
 
-### Tutorial demo
-https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/example.cpp
+[https://godbolt.org/z/jSmORB](Tutorial demo) *
 
-### Practical demo
-https://godbolt.org/z/zTHveB
+[https://godbolt.org/z/zTHveB](practical demo)
+
+*tutorial demo can be found in repo [example.cpp](https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/example.cpp)
 
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
 
 The language syntax for this to be done automatically for us are simply called "decorators" and look like this:
 
-```
+```python
 def stars(func):
   def inner(*args, **kwargs):
       print("**********")
@@ -47,9 +47,9 @@ This is a really nice feature for python that, as a C++ enthusiast, I would like
 # Accepting any arbitrary functor in modern C++
 Python decorator functions take in a _function_ as its argument. I toyed with a variety of concepts and discovered quickly that lambdas are not as versatile as I had hoped they would be. Consider the following code:
 
-https://godbolt.org/z/vxEJI3
+[https://godbolt.org/z/vxEJI3](goto godbolt)
 
-```
+```cpp
 template<typename R, typename... Args>
 auto stars(R(*in)(Args...)) {
     return [in](Args... args) {
@@ -84,7 +84,7 @@ float divide(float a, float b) {
 
 This tries to achieve the following python code:
 
-```
+```python
 def smart_divide(func):
    def inner(a,b):
       print("I am going to divide",a,"and",b)
@@ -113,7 +113,7 @@ We need to build a function, in our function, that can also accept an arbitrary 
 
 Python gets around this problem by using special arguments `*args` and `**kwargs`. I won't go into detail what these two differerent notations mean, but for our problem task they are equivalent to C++ variadic template arguments. They can be written like so:
 
-```
+```cpp
 template<typename... Args>
 void foo(Args... args) {
     bar(args...);
@@ -122,7 +122,7 @@ void foo(Args... args) {
 
 Anything passed into the function are forwarded as arguments for the inner function `bar`. If the types match, the compiler will accept the input. This is what we want, but remember we're returning a function inside another function. Prior to C++14 this might have been impossible to achieve nicely. Thankfully C++14 introduced **template lambdas**
 
-```
+```cpp
 return [func]<typename... Args>(Args... args) {
         std::cout << "*******" << std::endl;
         func(args...); // forward all arguments
@@ -137,7 +137,7 @@ Try toggling the compiler options in godbolt from GNU C Compiler 9.1 to latest C
 
 I was stuck on this for quite some time until I discovered this neat trick by trial and error:
 
-```
+```cpp
 template<typename F>
 auto output(F func) {
     return [func](auto... args) {
@@ -157,9 +157,9 @@ Great, we can begin putting it all together! We have:
 
 Now we can check to see if we can further nest the decorators...
 
-https://godbolt.org/z/EQnBWM
+[https://godbolt.org/z/EQnBWM](goto godbolt)
 
-```
+```cpp
 // line 64 -- four decorator functions!
 auto d = stars(output(smart_divide(divide)));
 d(12.0f, 3.0f);
@@ -167,7 +167,7 @@ d(12.0f, 3.0f);
 
 output is
 
-```
+```cpp
 *******
 I am going to divide a=12 and b=3
 4
@@ -184,14 +184,14 @@ Finally `stars` scope is about to end and prints the last `*********` row
 # Works out of the box as-is
 Check out line 57 using `printf` 
 
-```
+```cpp
 auto p = stars(printf);
 p("C++ is %s!", "epic");
 ```
 
 output is
 
-```
+```cpp
 *******
 C++ is epic!
 *******
@@ -203,11 +203,11 @@ I think I found my new favorite C++ concept for outputting log files, don't you 
 There's a lot of debate about C++'s exception handling, lack thereof, and controversial best practices. We can solve a lot of headache by providing decorator functions to let throwable functions fail without fear.
 
 Consider this example: 
-https://godbolt.org/z/zTHveB
+[https://godbolt.org/z/zTHveB](goto godbolt)
 
 We can let the function silently fail and we can choose to supply another decorator function to pipe the output to a log file. Alternatively we could also check the return value of the exception (using better value types of course this is just an example) to determine whether to shutdown the application or not.
 
-```
+```cpp
 auto read_safe = exception_fail_safe(file_read);
 
 if(!read_safe("missing_file.txt", buff, &sz).compare("OK")) {
@@ -220,7 +220,7 @@ if(!read_safe("missing_file.txt", buff, &sz).compare("OK")) {
 # After-thoughts
 Unlike python, C++ doesn't let us define new functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
 
-```
+```cpp
 decorated_functor d = smart_divide(divide);
 
 // reassignment
