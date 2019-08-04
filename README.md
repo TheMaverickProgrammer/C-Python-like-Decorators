@@ -7,7 +7,7 @@ How to write decorator functions in modern C++14 or higher
 https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/example.cpp
 
 ### Practical demo
-https://godbolt.org/z/6gzdR3
+https://godbolt.org/z/zTHveB
 
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
@@ -128,16 +128,34 @@ return [func]<typename... Args>(Args... args) {
     };
 ```
 
+# Clang and MSVC - `auto` pack for the win
+Try toggling the compiler options in godbolt from GNU C Compiler 9.1 to latest Clang or MSVC. No matter what language you specify, it won't compile. We were so close! Let's inspect further. Some google searches and forum scrolling later it seems the trusty GCC might be ahead of the curve with generic lambdas in C++14. To quote 
+
+`C++20 will come with templated and conceptualized lambdas. The feature has already been integrated into the standard draft.`
+
+We struck too early. I was stuck on this for quite some time until I discovered this neat trick by trial and error.
+
+```
+template<typename F>
+auto output(F func) {
+    return [func](auto... args) {
+        std::cout << func(args...);
+    };
+}
+```
+
+By specifying the arguments for the closure as an `auto` pack, we can avoid template type deduction all together - much more readable!
+
 # Nested decorators
 Great, we can begin putting it all together! We have:
 
 * Function that returns function (by lambda closures) (CHECK)
 * "Decorator function" that can accept any input function using a template typename (CHECK)
-* Inner function can also accept arbitrary args passed from outer function (using templated lambdas) (CHECK)
+* Inner function can also accept arbitrary args passed from outer function (using auto packs) (CHECK)
 
 Now we can check to see if we can further nest the decorators...
 
-https://godbolt.org/z/a9mVJj
+https://godbolt.org/z/EQnBWM
 
 ```
 // line 64 -- four decorator functions!
@@ -183,7 +201,7 @@ I think I found my new favorite C++ concept for outputting log files, don't you 
 There's a lot of debate about C++'s exception handling, lack thereof, and controversial best practices. We can solve a lot of headache by providing decorator functions to let throwable functions fail without fear.
 
 Consider this example: 
-https://godbolt.org/z/6gzdR3
+https://godbolt.org/z/zTHveB
 
 We can let the function silently fail and we can choose to supply another decorator function to pipe the output to a log file. Alternatively we could also check the return value of the exception (using better value types of course this is just an example) to determine whether to shutdown the application or not.
 
