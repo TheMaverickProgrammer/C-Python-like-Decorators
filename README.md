@@ -109,7 +109,7 @@ Now we've lost the type information from `Args...` in our function signature. Lu
 # Returning an inner function that can accept any number of arguments
 We need to build a function, in our function, that can also accept an arbitrary set of inputs and pass those along to our captured input function. To reiterate, our _returned function_ needs to be able to _forward all the arguments_ to the function we are trying to decorate.
 
-Python has gets around this problem by using special arguments `*args` and `**kwargs`. I won't go into detail what these two differerent notations mean, but for our problem task they are equivalent to C++ variadic template arguments. They can be written like so:
+Python gets around this problem by using special arguments `*args` and `**kwargs`. I won't go into detail what these two differerent notations mean, but for our problem task they are equivalent to C++ variadic template arguments. They can be written like so:
 
 ```
 template<typename... Args>
@@ -133,7 +133,7 @@ Great, we can begin putting it all together! We have:
 
 * Function that returns function (by lambda closures) (CHECK)
 * "Decorator function" that can accept any input function using a template typename (CHECK)
-* Inner function can also accept arbitrary args passed from inner function (using templated lambdas) (CHECK)
+* Inner function can also accept arbitrary args passed from outer function (using templated lambdas) (CHECK)
 
 Now we can check to see if we can further nest the decorators...
 
