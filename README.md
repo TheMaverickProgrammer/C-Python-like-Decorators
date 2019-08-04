@@ -1,5 +1,5 @@
 # C-Python-like-Decorators
-How to write decorate functions in modern C++14 or higher
+How to write decorator functions in modern C++14 or higher
 
 ## Skip the tutorial and view the final results 
 
