@@ -131,7 +131,7 @@ return [func]<typename... Args>(Args... args) {
 ```
 
 # Clang and MSVC - `auto` pack for the win
-Try toggling the compiler options in godbolt from GNU C Compiler 9.1 to latest Clang or MSVC. No matter what language you specify, it won't compile. We were so close! Let's inspect further. Some google searches and forum scrolling later it seems the trusty GCC might be ahead of the curve with generic lambdas in C++14. To quote one forum user:
+Try toggling the compiler options in godbolt from GNU C Compiler 9.1 to latest Clang or MSVC. No matter what standard you specify, it won't compile. We were so close! Let's inspect further. Some google searches and forum scrolling later, it seems the trusty GCC might be ahead of the curve with generic lambdas in C++14. To quote one forum user:
 
 > C++20 will come with templated and conceptualized lambdas. The feature has already been integrated into the standard draft.
 
