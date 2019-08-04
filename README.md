@@ -169,7 +169,24 @@ C++ is epic!
 
 I think I found my new favorite C++ concept for outputting log files, don't you feel the same way? :)
 
-# Flaws
+# Practical examples
+There's a lot of debate about C++'s exception handling, lack thereof, and controversial best practices. We can solve a lot of headache by providing decorator functions to let throwable functions fail without fear.
+
+Consider this example: 
+https://godbolt.org/z/6gzdR3
+
+We can let the function silently fail and we can choose to supply another decorator function to pipe the output to a log file. Alternatively we could also check the return value of the exception (using better value types of course this is just an example) to determine whether to shutdown the application or not.
+
+```
+auto read_safe = exception_fail_safe(file_read);
+
+if(read_safe("missing_file.txt", buff, &sz).compare("OK")) {
+    app.abort();
+    return;
+}
+```
+
+# After-thoughts
 Unlike python, C++ doesn't let us define new functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
 
 ```
@@ -179,4 +196,3 @@ decorated_functor d = smart_divide(divide);
 d = stars(output(d));
 
 Though assignment of arbitrary types is almost next to impossible without type erasure and as we discovered at the beginning, lambdas do not dissolve into C++ pointers as we might expect making this task non-trivial.
-
