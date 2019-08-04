@@ -12,7 +12,7 @@ https://godbolt.org/z/6gzdR3
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
 
-The language syntax in which applying a decorator function can be achieve automatically for us are simply called "decorators" and look like this:
+The language syntax for this to be done automatically for us are simply called "decorators" and look like this:
 
 ```
 def stars(func):
