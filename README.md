@@ -5,9 +5,9 @@ Works across MSVC, GNU CC, and Clang compilers
 
 ## Skip the tutorial and view the final results 
 
-[https://godbolt.org/z/jSmORB](Tutorial demo) *
+[tutorial demo](https://godbolt.org/z/jSmORB) *
 
-[https://godbolt.org/z/zTHveB](practical demo)
+[practical demo](https://godbolt.org/z/zTHveB)
 
 *tutorial demo can be found in repo [example.cpp](https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/example.cpp)
 
@@ -47,7 +47,7 @@ This is a really nice feature for python that, as a C++ enthusiast, I would like
 # Accepting any arbitrary functor in modern C++
 Python decorator functions take in a _function_ as its argument. I toyed with a variety of concepts and discovered quickly that lambdas are not as versatile as I had hoped they would be. Consider the following code:
 
-[https://godbolt.org/z/vxEJI3](goto godbolt)
+[goto godbolt](https://godbolt.org/z/vxEJI3)
 
 ```cpp
 template<typename R, typename... Args>
@@ -157,7 +157,7 @@ Great, we can begin putting it all together! We have:
 
 Now we can check to see if we can further nest the decorators...
 
-[https://godbolt.org/z/EQnBWM](goto godbolt)
+[goto godbolt](https://godbolt.org/z/EQnBWM)
 
 ```cpp
 // line 64 -- four decorator functions!
@@ -203,7 +203,7 @@ I think I found my new favorite C++ concept for outputting log files, don't you 
 There's a lot of debate about C++'s exception handling, lack thereof, and controversial best practices. We can solve a lot of headache by providing decorator functions to let throwable functions fail without fear.
 
 Consider this example: 
-[https://godbolt.org/z/zTHveB](goto godbolt)
+[goto godbolt](https://godbolt.org/z/zTHveB)
 
 We can let the function silently fail and we can choose to supply another decorator function to pipe the output to a log file. Alternatively we could also check the return value of the exception (using better value types of course this is just an example) to determine whether to shutdown the application or not.
 
