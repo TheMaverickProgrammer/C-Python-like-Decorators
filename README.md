@@ -98,7 +98,7 @@ Now we can nest multiple decorator functions together! ... not so fast...
 
 Now we've lost the type information from `Args...` in our function signature. Luckily there is something we can do about this in C++14 and onward...
 
-# Returning an inner function that can accept \*args and \*\*kwargs
+# Returning an inner function that can accept any number of arguments
 We need to build a function, in our function, that can also accept an arbitrary set of inputs and pass those along to our captured input function. To reiterate, our _returned function_ needs to be able to _forward all the arguments_ to the function we are trying to decorate.
 
 Python has gets around this problem by using special arguments `*args` and `**kwargs`. I won't go into detail what these two differerent notations mean, but for our problem task they are equivalent to C++ variadic template arguments. They can be written like so:
@@ -129,7 +129,7 @@ Great, we can begin putting it all together! We have:
 
 Now we can check to see if we can further nest the decorators...
 
-https://godbolt.org/z/Q6C6qu
+https://godbolt.org/z/a9mVJj
 
 ```
 // line 64 -- four decorator functions!
@@ -146,9 +146,11 @@ I am going to divide a=12 and b=3
 *******
 ```
 
-First the `stars` decorator is called printint our `**********` topmost row.
-Then the `output` function prints the result of the next function to `cout` so we can see it
+First the `stars` decorator is called printing `**********` to our topmost row.
+Then the `output` function prints the result of the next function to `cout` so we can see it. The result of the next function is covered by the next two nested functions.
+
 The `smart_divide` function checks the input passed in from the top of the chain `12.0f, 3.0f` if we are dividing by zero or not before forwarding args to the next function `divide` which calculates the result. `divide` returns the result and `smart_divide` returns that result to `output`.
+
 Finally `stars` scope is about to end and prints the last `*********` row
 
 # Works out of the box as-is
