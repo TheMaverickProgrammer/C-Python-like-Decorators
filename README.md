@@ -1,6 +1,14 @@
 # C-Python-like-Decorators
 How to write decorate functions in modern C++14 or higher
 
+## Skip the tutorial and view the final results 
+
+### Tutorial demo
+https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/example.cpp
+
+### Practical demo
+https://godbolt.org/z/6gzdR3
+
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
 
