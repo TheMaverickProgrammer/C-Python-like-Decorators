@@ -1,12 +1,14 @@
 /* reusable functions that behave like python decorator functions 
  * e.g. decorators wrap existing functions and return aggregate function
- * auto foo = exception_fail_safe(fileread("missing_file.txt"));
- * foo(); // works! 
+ * auto foo = exception_fail_safe(fileread);
+ * foo("missing_file.txt"); // works! 
  *
  * auto bar = output_result(foo); // further decoration
- * bar(); // output: "Exception caught: missing_file.txt not found!"
+ * bar("missing_file.txt"); // output: "Exception caught: missing_file.txt not found!"
  *
  * Play source at https://godbolt.org/z/Q6C6qu
+ *
+ * View the tutorial at https://github.com/TheMaverickProgrammer/C-Python-like-Decorators
  */
 
 #include <iostream>
