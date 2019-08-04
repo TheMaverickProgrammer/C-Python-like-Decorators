@@ -146,7 +146,7 @@ auto output(F func) {
 }
 ```
 
-By specifying the arguments for the closure as an `auto` pack, we can avoid template type deduction all together - much more readable!
+By specifying the arguments for the closure as an `auto` pack, we can avoid template type parameters all together - much more readable!
 
 # Nested decorators
 Great, we can begin putting it all together! We have:
