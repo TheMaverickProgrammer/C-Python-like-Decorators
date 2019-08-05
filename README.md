@@ -223,7 +223,7 @@ if(!read_safe("missing_file.txt", buff, &sz).OK) {
 ```
 
 # Decorating functions at compile-time!
-After this tutorial was released a user by the online name [robin-m](https://www.reddit.com/r/cpp/comments/cm2g4l/python_function_decorators_in_modern_c_without/evzkwtu/?context=3) pointed out that the functions _could_ be decorated at compile-time as opposed to runtime (as I previously acknowledged this seemed to be the only way in C++ without macro magic). Robin-m suggests using `constexpr` in the function declaration. 
+After this tutorial was released a user by the online name [robin-m](robinmoussu.gitlab.io/blog) pointed out that the functions _could_ be decorated at compile-time as opposed to runtime (as I previously acknowledged this seemed to be the only way in C++ without macro magic). Robin-m suggests using `constexpr` in the function declaration. 
 
 [goto godbolt](https://godbolt.org/z/jflOuu)
 
