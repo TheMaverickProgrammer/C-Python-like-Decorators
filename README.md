@@ -217,6 +217,113 @@ if(!read_safe("missing_file.txt", buff, &sz).compare("OK")) {
 }
 ```
 
+# Decorating member functions
+We can decorate member functions in C++. To be clear, we cannot change the existing member function itself, but we can bind a reference to the member function and call it.
+
+Let's take an example that uses everything we learned so far. We want to produce a grocery checkout program to tell us the cost of each bag of apples we picked. We want to throw exceptions when invalid arguments are supplied but we want it to do so safely, log a nice timestamp somewhere, and display the price if valid.
+
+[goto godbolt](https://godbolt.org/z/1o2Y0l)
+
+```cpp
+// exception decorator for optional return types
+template<typename F>
+auto exception_fail_safe(F func)  {
+    return [func](auto... args) -> optional_type<decltype(func(args...))> {
+        using R = optional_type<decltype(func(args...))>;
+
+        try {
+            return R(func(args...));
+        } catch(std::iostream::failure& e) {
+            return R(false, e.what());
+        } catch(std::exception& e) {
+            return R(false, e.what());
+        } catch(...) {
+            // This ... catch clause will capture any exception thrown
+            return R(false, std::string("Exception caught: default exception"));
+        }
+    };
+}
+```
+
+This decorator returns an `optional_type` which for our purposes is very crude but allows us to check if the return value of the function was OK or if an exception was thrown. If it was, we want to see what it is. We declare the lambda to share the same return value as the closure with `-> optional_type<decltype(func(args...))>`. We use the same try-catch as before but supply different constructors for our `optional_type`.
+
+We now want to use this decorator on our `double apple::calculate_cost(int, double)` member function. We cannot change what exists, but we can turn it into a functor using `std::bind`.
+
+```cpp
+apples groceries(1.09);
+auto get_cost = exception_fail_safe(std::bind(&apples::calculate_cost, &groceries, _1, _2));
+```
+
+We create a vector of 4 results. 2 of them will throw errors while the other 2 will run just fine. Let's see our results.
+
+```cpp
+[1] There was an error: apples must weigh more than 0 ounces
+
+[2] Bag cost $2.398
+
+[3] Bag cost $7.085
+
+[4] There was an error: must have 1 or more apples
+```
+
+# Reusable member-function decorators
+The last example was not reusable. It was bound to exactly one object. Let's refactor that and decorate our output a little more.
+
+```cpp
+template<typename F>
+auto visit_apples(F func) {
+    return [func](apples& a, auto... args) {
+        return (a.*func)(args...);
+    };
+}
+```
+
+All we need is a decorator function at the very deepest part of our nest that takes in the object by reference and its member function.
+
+We could wrap it like so
+
+```cpp
+apples groceries(2.45);
+auto get_cost = exception_fail_safe(visit_apples(&apples::calculate_cost));
+get_cost(groceries, 10, 3); // lots of big apples!
+```
+
+Crude but proves a point. We've basically reinvented a visitor pattern. Our decorator functions visit an object and invoke the member function on our behalf since we cannot modify the class definition. The rest is the same as it was before: functions nested in functions like little russian dolls.
+
+We can completely take advantage of this functional-like syntax and have all our output decorators return the result value as well.
+
+[goto godbolt](https://godbolt.org/z/RZBXb-)
+
+```cpp
+// Different prices for different apples
+    apples groceries1(1.09), groceries2(3.0), groceries3(4.0);
+    auto get_cost = log_time(output(exception_fail_safe(visit_apples(&apples::calculate_cost))));
+
+    auto vec = { 
+        get_cost(groceries2, 2, 1.1), 
+        get_cost(groceries3, 5, 1.3), 
+        get_cost(groceries1, 4, 0) 
+    };
+```
+
+Which outputs
+
+```cpp
+Bag cost $6.6
+
+> Logged at Mon Aug  5 02:17:10 2019
+
+
+Bag cost $26
+
+> Logged at Mon Aug  5 02:17:10 2019
+
+
+There was an error: apples must weigh more than 0 ounces
+
+> Logged at Mon Aug  5 02:17:10 2019
+```
+
 # After-thoughts
 Unlike python, C++ doesn't let us define new functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
 
