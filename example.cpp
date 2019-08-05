@@ -6,7 +6,7 @@
  * auto bar = output_result(foo); // further decoration
  * bar(); // output: "Exception caught: missing_file.txt not found!"
  *
- * Play with source at https://godbolt.org/z/jSmORB
+ * Play with source at https://godbolt.org/z/jflOuu
  * View the tutorial at https://github.com/TheMaverickProgrammer/C-Python-like-Decorators
  */
 
@@ -15,8 +15,12 @@
 #include <cassert>
 using namespace std;
 
+/////////////////////////
+// decorators          //
+/////////////////////////
+
 template<typename F>
-auto stars(F func) {
+constexpr auto stars(F func) {
     return [func](auto... args) {
         std::cout << "*******" << std::endl;
         func(args...);
@@ -25,7 +29,7 @@ auto stars(F func) {
 }
 
 template<typename F>
-auto smart_divide(F func) {
+constexpr auto smart_divide(F func) {
     return [func](float a, float b) {
         std::cout << "I am going to divide a=" << a << " and b=" << b << std::endl;
 
@@ -39,32 +43,40 @@ auto smart_divide(F func) {
 }
 
 template<typename F>
-auto output(F func) {
+constexpr auto output(F func) {
     return [func](auto... args) {
         std::cout << func(args...);
     };
 }
 
-// Regular functions
+////////////////////////////////////////
+//    function implementations        //
+////////////////////////////////////////
 
-void hello() {
+void hello_impl() {
 	cout << "hello, world!";
 }
 
 
-float divide(float a, float b) {
+float divide_impl(float a, float b) {
     return a/b;
 }
 
+/////////////////////////////////////////
+// final decorated functions           //
+/////////////////////////////////////////
+
+constexpr auto hello = stars(hello_impl);
+constexpr auto divide = stars(output(smart_divide(divide_impl)));
+constexpr auto print = stars(printf);
+
 int main() {
-    auto p = stars(printf);
-    p("C++ is %s!", "epic");
+    
+    hello();
 
-    auto h = stars(hello);
-    h();
+    divide(12.0f, 3.0f);
 
-    auto d = stars(output(smart_divide(divide)));
-    d(12.0f, 3.0f);
+    print("C++ is %s!", "epic!");
 
     return 0;
 }
