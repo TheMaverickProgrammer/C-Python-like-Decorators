@@ -210,14 +210,36 @@ We can let the function silently fail and we can choose to supply another decora
 ```cpp
 auto read_safe = exception_fail_safe(file_read);
 
-if(!read_safe("missing_file.txt", buff, &sz).compare("OK")) {
+// assume read_safe() returns some optional_type<> struct
+if(!read_safe("missing_file.txt", buff, &sz).OK) {
     // Whoops! We needed this file. Quit immediately!
     app.abort();
     return;
 }
 ```
 
-# Decorating member functions
+# Decorating functions at compile-time!
+After this tutorial was released a user by the online name [robin-m](https://www.reddit.com/r/cpp/comments/cm2g4l/python_function_decorators_in_modern_c_without/evzkwtu/?context=3) pointed out that the functions _could_ be decorated at compile-time as opposed to runtime (as I previously acknowledged this seemed to be the only way in C++ without macro magic). Robin-m suggests using `constexpr` in the function declaration. 
+
+[goto godbolt](https://godbolt.org/z/jflOuu)
+
+```cpp
+/////////////////////////////////////////
+// final decorated functions           //
+/////////////////////////////////////////
+
+constexpr auto hello = stars(hello_impl);
+constexpr auto divide = stars(output(smart_divide(divide_impl)));
+constexpr auto print = stars(printf);
+
+int main() {
+ // ... 
+ }
+```
+
+This allows us to separate the regular function implementation we may wish to decorate from the final decorated function we'll use in our programs. This means any modification to these 'final' functions will happen globally across our code base and not limited to a single routine's scope. This increases reusability, modularity, and readability - no sense repeating yourself twice!
+
+# Further Applications: Decorating member functions
 We can decorate member functions in C++. To be clear, we cannot change the existing member function itself, but we can bind a reference to the member function and call it.
 
 Let's take an example that uses everything we learned so far. We want to produce a grocery checkout program to tell us the cost of each bag of apples we picked. We want to throw exceptions when invalid arguments are supplied but we want it to do so safely, log a nice timestamp somewhere, and display the price if valid.
@@ -340,6 +362,6 @@ And as we discovered at the beginning, lambdas with capture do not dissolve into
 
 With all the complexities at hand, this task non-trivial. 
 
-Additionally, there's no nice syntax at hand for C++ to wrap a function around another at definition without the use of magic macros or mocs. We're left to wrap functions at run-time.
+Additionally, there's no nice syntax at hand for C++ to wrap a function around another at definition without the use of magic macros or mocs. ~~We're left to wrap functions at run-time.~~ Thanks to [robin-m](https://www.reddit.com/r/cpp/comments/cm2g4l/python_function_decorators_in_modern_c_without/evzkwtu/?context=3) for pointing out that decorators can be made at compile-time after all!
 
 This challenge took about 2 days plugged in and was a lot of fun. I learned a lot on the way and discovered something pretty useful. Thanks for reading!
