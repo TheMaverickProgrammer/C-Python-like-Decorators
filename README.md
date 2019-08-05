@@ -217,6 +217,14 @@ if(!read_safe("missing_file.txt", buff, &sz).compare("OK")) {
 }
 ```
 
+# Decorating functions at compile time!
+TODO: Credits to robin-m
+https://godbolt.org/z/jflOuu
+
+# Decorating member functions of objects
+TODO: talk briefly about this
+https://godbolt.org/z/Ow0Pt_
+
 # After-thoughts
 Unlike python, C++ doesn't let us define new functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
 
