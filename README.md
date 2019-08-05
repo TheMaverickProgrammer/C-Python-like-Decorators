@@ -5,11 +5,12 @@ Works across MSVC, GNU CC, and Clang compilers
 
 ## Skip the tutorial and view the final results 
 
-[tutorial demo](https://godbolt.org/z/jSmORB) *
+[tutorial demo](https://godbolt.org/z/jSmORB)
 
-[practical demo](https://godbolt.org/z/2P_qWq)
+[practical demo](https://godbolt.org/z/hJ_MQA)
 
-*tutorial demo can be found in repo [example.cpp](https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/example.cpp)
+[compile-time decorator demo](https://godbolt.org/z/jflOuu)
+
 
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
@@ -244,7 +245,7 @@ We can decorate member functions in C++. To be clear, we cannot change the exist
 
 Let's take an example that uses everything we learned so far. We want to produce a grocery checkout program to tell us the cost of each bag of apples we picked. We want to throw exceptions when invalid arguments are supplied but we want it to do so safely, log a nice timestamp somewhere, and display the price if valid.
 
-[goto godbolt](https://godbolt.org/z/1o2Y0l)
+[goto godbolt](https://godbolt.org/z/x1-VYh)
 
 ```cpp
 // exception decorator for optional return types
@@ -314,18 +315,18 @@ Crude but proves a point. We've basically reinvented a visitor pattern. Our deco
 
 We can completely take advantage of this functional-like syntax and have all our output decorators return the result value as well.
 
-[goto godbolt](https://godbolt.org/z/RZBXb-)
+[goto godbolt](https://godbolt.org/z/5OzQZ9)
 
 ```cpp
 // Different prices for different apples
-    apples groceries1(1.09), groceries2(3.0), groceries3(4.0);
-    auto get_cost = log_time(output(exception_fail_safe(visit_apples(&apples::calculate_cost))));
+apples groceries1(1.09), groceries2(3.0), groceries3(4.0);
+auto get_cost = log_time(output(exception_fail_safe(visit_apples(&apples::calculate_cost))));
 
-    auto vec = { 
-        get_cost(groceries2, 2, 1.1), 
-        get_cost(groceries3, 5, 1.3), 
-        get_cost(groceries1, 4, 0) 
-    };
+auto vec = { 
+    get_cost(groceries2, 2, 1.1), 
+    get_cost(groceries3, 5, 1.3), 
+    get_cost(groceries1, 4, 0) 
+};
 ```
 
 Which outputs
