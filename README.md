@@ -325,7 +325,7 @@ There was an error: apples must weigh more than 0 ounces
 ```
 
 # After-thoughts
-Unlike python, C++ doesn't let us define new functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
+Unlike python, C++ doesn't let us redefine functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
 
 ```cpp
 decorated_functor d = smart_divide(divide);
