@@ -11,6 +11,9 @@ Works across MSVC, GNU CC, and Clang compilers
 
 [compile-time decorator demo](https://godbolt.org/z/jflOuu)
 
+[run-time member function demo](https://godbolt.org/z/x1-VYh)
+
+[reusable member function demo](https://godbolt.org/z/5OzQZ9)
 
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
