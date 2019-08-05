@@ -1,4 +1,4 @@
-// practical example of modern C++ decorators
+// practical examples of modern C++ decorators
 // view the full tutorial at https://github.com/TheMaverickProgrammer/C-Python-like-Decorators
 
 #include <iostream>
