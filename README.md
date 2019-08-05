@@ -108,7 +108,7 @@ Now we can nest multiple decorator functions together! ... not so fast...
 
 Now we've lost the type information from `Args...` in our function signature. Luckily there is something we can do about this in C++14 and onward...
 
-# Returning an inner function that can accept any number of arguments
+# Returning an closure that can accept any number of args
 We need to build a function, in our function, that can also accept an arbitrary set of inputs and pass those along to our captured input function. To reiterate, our _returned function_ needs to be able to _forward all the arguments_ to the function we are trying to decorate.
 
 Python gets around this problem by using special arguments `*args` and `**kwargs`. I won't go into detail what these two differerent notations mean, but for our problem task they are equivalent to C++ variadic arguments. They can be written like so:
