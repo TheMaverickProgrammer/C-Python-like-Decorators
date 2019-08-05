@@ -1,4 +1,4 @@
-/* reusable functions that behave like python decorator functions 
+/* the goal was to make reusable functions that behave like python decorator functions 
  * e.g. decorators wrap existing functions and return aggregate function
  * auto foo = exception_fail_safe(fileread("missing_file.txt"));
  * foo(); // works! 
