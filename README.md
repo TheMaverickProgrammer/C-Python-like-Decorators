@@ -104,7 +104,7 @@ def divide(a,b):
     return a/b
 ```
 
-It works! Great! But try uncommenting line 62. It does not compile. If you looks closely at the compiler output it has trouble deducing the function pointer types from the lambda object returned by the inner-most decorator. This is because **lambdas with capture cannot be converted to function pointers**
+It works! Great! But try uncommenting line 66. It does not compile. If you looks closely at the compiler output it has trouble deducing the function pointer types from the lambda object returned by the inner-most decorator. This is because **lambdas with capture cannot be converted to function pointers**
 
 If we were to introduce a struct to hold our arbitrary functors, we'd fall into the same problem. By limiting ourselves to a specific expected function-pointer syntax, we lose the ability to accept just about any type we want. The solution is to use a single `template<typename F>` before our decorators to let the compiler know the decorator can take in just about anything we throw at it.
 
