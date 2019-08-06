@@ -304,7 +304,7 @@ auto visit_apples(F func) {
 }
 ```
 
-All we need is a decorator function at the very deepest part of our nest that takes in the object by reference and its member function.
+All we need is a function at the very deepest part of our nest that takes in the object by reference and its member function.
 
 We could wrap it like so
 
