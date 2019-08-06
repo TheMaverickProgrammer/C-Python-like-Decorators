@@ -18,7 +18,7 @@ Works across MSVC, GNU CC, and Clang compilers
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
 
-The language syntax in python are simply called "decorators" and begin with `@`. A python decorator would look like this:
+The syntax for this in python is simply called "decorators" and begin with `@`. A python decorator would look like this:
 
 ```python
 def stars(func):
