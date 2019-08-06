@@ -186,7 +186,7 @@ The `smart_divide` function checks the input passed in from the top of the chain
 Finally `stars` scope is about to end and prints the last `*********` row
 
 # Works out of the box as-is
-Check out line 57 using `printf` 
+Check out line 51 using `printf` 
 
 ```cpp
 auto p = stars(printf);
