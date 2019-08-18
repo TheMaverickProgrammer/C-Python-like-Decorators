@@ -3,6 +3,9 @@ How to write decorator functions in modern C++14 or higher
 
 Works across MSVC, GNU CC, and Clang compilers
 
+#### Part 2 released 8/18/2019!
+Expand on these concepts by writing powerful decorated member functions [here](https://github.com/TheMaverickProgrammer/C-Python-Like-Class-Member-Decorators)
+
 ## Skip the tutorial and view the final results 
 
 [tutorial demo](https://godbolt.org/z/jSmORB)
