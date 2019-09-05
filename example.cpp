@@ -70,6 +70,15 @@ constexpr auto hello = stars(hello_impl);
 constexpr auto divide = stars(output(smart_divide(divide_impl)));
 constexpr auto print = stars(printf);
 
+// example for declaring a decorated function in one step.
+// foo() cannot be templated for now, but C++20 should make this possible
+constexpr auto foo = stars(
+[](unsigned n=10) {
+    for (unsigned i = 0; i < n; ++i)
+        cout << "FOO!\n";
+}
+);
+
 int main() {
     
     hello();
@@ -77,6 +86,8 @@ int main() {
     divide(12.0f, 3.0f);
 
     print("C++ is %s!", "epic!");
+
+    foo(3);
 
     return 0;
 }
