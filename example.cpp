@@ -20,21 +20,21 @@ using namespace std;
 /////////////////////////
 
 template<typename F>
-constexpr auto stars(F func) {
-    return [func](auto... args) {
-        std::cout << "*******" << std::endl;
-        func(args...);
-        std::cout << std::flush << "\n*******" << std::endl;
+constexpr auto stars(const F& func) {
+    return [func](auto&&... args) {
+        cout << "*******" << endl;
+        func(forward<decltype(args)>(args)...);
+        cout << "\n*******" << endl;
     };
 }
 
 template<typename F>
-constexpr auto smart_divide(F func) {
+constexpr auto smart_divide(const F& func) {
     return [func](float a, float b) {
-        std::cout << "I am going to divide a=" << a << " and b=" << b << std::endl;
+        cout << "I am going to divide a=" << a << " and b=" << b << endl;
 
         if(b == 0) {
-            std::cout << "Whoops! cannot divide" << std::endl;
+            cout << "Whoops! cannot divide" << endl;
             return 0.0f;
         }
 
@@ -43,9 +43,9 @@ constexpr auto smart_divide(F func) {
 }
 
 template<typename F>
-constexpr auto output(F func) {
-    return [func](auto... args) {
-        std::cout << func(args...);
+constexpr auto output(const F& func) {
+    return [func](auto&&... args) {
+        cout << func(forward<decltype(args)>(args)...);
     };
 }
 
@@ -54,7 +54,7 @@ constexpr auto output(F func) {
 ////////////////////////////////////////
 
 void hello_impl() {
-	cout << "hello, world!";
+   cout << "hello, world!";
 }
 
 
@@ -73,10 +73,10 @@ constexpr auto print = stars(printf);
 // example for declaring a decorated function in one step.
 // foo() cannot be templated for now, but C++20 should make this possible
 constexpr auto foo = stars(
-[](unsigned n=10) {
-    for (unsigned i = 0; i < n; ++i)
-        cout << "FOO!\n";
-}
+    [](unsigned n=10) {
+        for (unsigned i = 0; i < n; ++i)
+            cout << "FOO!\n";
+    }
 );
 
 int main() {
