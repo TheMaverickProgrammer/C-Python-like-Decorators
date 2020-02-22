@@ -1,4 +1,4 @@
-// practical examples of modern C++ decorators
+// practical example of modern C++ decorators
 // view the full tutorial at https://github.com/TheMaverickProgrammer/C-Python-like-Decorators
 
 #include <iostream>
@@ -18,7 +18,6 @@ using namespace std;
 ////////////////////////////////////
 // weak optional value structure  //
 ////////////////////////////////////
-
 template<typename T>
 struct optional_type {
     T value;
@@ -26,8 +25,8 @@ struct optional_type {
     bool BAD;
     std::string msg;
 
-    optional_type(T t) : value(t) { OK = true; BAD = false; }
-    optional_type(bool ok, std::string msg="") : msg(msg) { OK = ok; BAD = !ok; }
+    optional_type(T&& t) : value(std::move(t)) { OK = true; BAD = false; }
+    optional_type(bool ok, std::string msg="") : msg(std::move(msg)) { OK = ok; BAD = !ok; }
 };
 
 /////////////////////////////////////
@@ -36,12 +35,13 @@ struct optional_type {
 
 // exception decorator for optional return types
 template<typename F>
-auto exception_fail_safe(F func)  {
-    return [func](auto... args) -> optional_type<decltype(func(args...))> {
-        using R = optional_type<decltype(func(args...))>;
+auto exception_fail_safe(const F& func)  {
+    return [func](auto&&... args) 
+    -> optional_type<decltype(func(std::forward<decltype(args)>(args)...))> {
+        using R = optional_type<decltype(func(std::forward<decltype(args)>(args)...))>;
 
         try {
-            return R(func(args...));
+            return R(func(std::forward<decltype(args)>(args)...));
         } catch(std::iostream::failure& e) {
             return R(false, e.what());
         } catch(std::exception& e) {
@@ -55,9 +55,9 @@ auto exception_fail_safe(F func)  {
 
 // this decorator can output our optional data
 template<typename F>
-auto output(F func) {
-    return [func](auto... args) {
-        auto opt = func(args...);
+auto output(const F& func) {
+    return [func](auto&&... args) {
+        auto opt = func(std::forward<decltype(args)>(args)...);
         
         if(opt.BAD) {
             std::cout << "There was an error: " << opt.msg << std::endl;
@@ -73,11 +73,11 @@ auto output(F func) {
 // returning is purely conditional based on our needs, in this case
 // we want to take advantage of the functional-like syntax we've created
 template<typename F>
-auto log_time(F func) {
-    return [func](auto... args) {
+auto log_time(const F& func) {
+    return [func](auto&&... args) {
         auto now = std::chrono::system_clock::now();
         std::time_t time = std::chrono::system_clock::to_time_t(now); 
-        auto opt = func(args...);
+        auto opt = func(std::forward<decltype(args)>(args)...);
         std::cout << "> Logged at " << std::ctime(&time) << std::endl;
 
         return opt;
@@ -110,9 +110,9 @@ struct apples {
 ////////////////////////////////////
 
 template<typename F>
-auto visit_apples(F func) {
-    return [func](apples& a, auto... args) {
-        return (a.*func)(args...);
+auto visit_apples(const F& func) {
+    return [func](apples& a, auto&&... args) {
+        return (a.*func)(std::forward<decltype(args)>(args)...);
     };
 }
 
