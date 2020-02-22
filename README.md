@@ -3,20 +3,17 @@ How to write decorator functions in modern C++14 or higher
 
 Works across MSVC, GNU CC, and Clang compilers
 
-#### Part 2 released 8/18/2019!
-Expand on these concepts by writing powerful decorated member functions [here](https://github.com/TheMaverickProgrammer/C-Python-Like-Class-Member-Decorators)
-
 ## Skip the tutorial and view the final results 
 
-[tutorial demo](https://godbolt.org/z/jSmORB)
+[tutorial demo](https://godbolt.org/z/nV7gjP)
 
-[practical demo](https://godbolt.org/z/hJ_MQA)
+[practical demo](https://godbolt.org/z/o73nZh)
 
-[compile-time decorator demo](https://godbolt.org/z/jflOuu)
+[compile-time decorator demo](https://godbolt.org/z/gCQk3S)
 
-[run-time member function demo](https://godbolt.org/z/x1-VYh)
+[run-time member function demo](https://godbolt.org/z/Fy-9XT)
 
-[reusable member function demo](https://godbolt.org/z/5OzQZ9)
+[reusable member function demo](https://godbolt.org/z/w4P9V-)
 
 # The goal
 Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
@@ -54,12 +51,12 @@ This is a really nice feature for python that, as a C++ enthusiast, I would like
 # Accepting any arbitrary functor in modern C++
 Python decorator functions take in a _function_ as its argument. I toyed with a variety of concepts and discovered quickly that lambdas are not as versatile as I had hoped they would be. Consider the following code:
 
-[goto godbolt](https://godbolt.org/z/vxEJI3)
+[goto godbolt](https://godbolt.org/z/4R7Elv)
 
 ```cpp
 template<typename R, typename... Args>
 auto stars(R(*in)(Args...)) {
-    return [in](Args... args) {
+    return [in](Args&&... args) {
         std::cout << "*******" << std::endl;
         in();
         std::cout << "*******" << std::endl;
@@ -122,17 +119,17 @@ Python gets around this problem by using special arguments `*args` and `**kwargs
 
 ```cpp
 template<typename... Args>
-void foo(Args... args) {
-    bar(args...);
+void foo(Args&&... args) {
+    bar(std::forward<decltype(args)>(args)...);
 }
 ```
 
 Anything passed into the function are forwarded as arguments for the inner function `bar`. If the types match, the compiler will accept the input. This is what we want, but remember we're returning a function inside another function. Prior to C++14 this might have been impossible to achieve nicely. Thankfully C++14 introduced **template lambdas**
 
 ```cpp
-return [func]<typename... Args>(Args... args) {
+return [func]<typename... Args>(Args&&... args) {
         std::cout << "*******" << std::endl;
-        func(args...); // forward all arguments
+        func(std::forward<decltype(args)>(args)...); // forward all arguments
         std::cout << "\n*******" << std::endl;
     };
 ```
@@ -146,9 +143,9 @@ I was stuck on this for quite some time until I discovered this neat trick by tr
 
 ```cpp
 template<typename F>
-auto output(F func) {
-    return [func](auto... args) {
-        std::cout << func(args...);
+auto output(const F& func) {
+    return [func](auto&&... args) {
+        std::cout << func(std::forward<decltype(args)>(args)...);
     };
 }
 ```
@@ -164,10 +161,10 @@ Great, we can begin putting it all together! We have:
 
 Now we can check to see if we can further nest the decorators...
 
-[goto godbolt](https://godbolt.org/z/EQnBWM)
+[goto godbolt](https://godbolt.org/z/NW6jWE)
 
 ```cpp
-// line 64 -- four decorator functions!
+// line 57 -- four decorator functions!
 auto d = stars(output(smart_divide(divide)));
 d(12.0f, 3.0f);
 ```
@@ -210,7 +207,7 @@ I think I found my new favorite C++ concept for outputting log files, don't you 
 There's a lot of debate about C++'s exception handling, lack thereof, and controversial best practices. We can solve a lot of headache by providing decorator functions to let throwable functions fail without fear.
 
 Consider this example: 
-[goto godbolt](https://godbolt.org/z/2P_qWq)
+[goto godbolt](https://godbolt.org/z/VV2rRh)
 
 We can let the function silently fail and we can choose to supply another decorator function to pipe the output to a log file. Alternatively we could also check the return value of the exception (using better value types of course this is just an example) to determine whether to shutdown the application or not.
 
@@ -226,9 +223,9 @@ if(!read_safe("missing_file.txt", buff, &sz).OK) {
 ```
 
 # Decorating functions at compile-time!
-After this tutorial was released a user by the online name [robin-m](robinmoussu.gitlab.io/blog) pointed out that the functions _could_ be decorated at compile-time as opposed to runtime (as I previously acknowledged this seemed to be the only way in C++ without macro magic). Robin-m suggests using `constexpr` in the function declaration. 
+After this tutorial was released a user by the online name [robin-m](http://robinmoussu.gitlab.io/blog) pointed out that the functions _could_ be decorated at compile-time as opposed to runtime (as I previously acknowledged this seemed to be the only way in C++ without macro magic). Robin-m suggests using `constexpr` in the function declaration. 
 
-[goto godbolt](https://godbolt.org/z/jflOuu)
+[goto godbolt](https://godbolt.org/z/gCQk3S)
 
 ```cpp
 /////////////////////////////////////////
@@ -251,17 +248,18 @@ We can decorate member functions in C++. To be clear, we cannot change the exist
 
 Let's take an example that uses everything we learned so far. We want to produce a grocery checkout program to tell us the cost of each bag of apples we picked. We want to throw exceptions when invalid arguments are supplied but we want it to do so safely, log a nice timestamp somewhere, and display the price if valid.
 
-[goto godbolt](https://godbolt.org/z/x1-VYh)
+[goto godbolt](https://godbolt.org/z/3fS4rG)
 
 ```cpp
 // exception decorator for optional return types
 template<typename F>
-auto exception_fail_safe(F func)  {
-    return [func](auto... args) -> optional_type<decltype(func(args...))> {
-        using R = optional_type<decltype(func(args...))>;
+auto exception_fail_safe(const F& func)  {
+    return [func](auto&&... args) 
+    -> optional_type<decltype(func(std::forward<decltype(args)>(args)...))> {
+        using R = optional_type<decltype(func(std::forward<decltype(args)>(args)...))>;
 
         try {
-            return R(func(args...));
+            return R(func(std::forward<decltype(args)>(args)...));
         } catch(std::iostream::failure& e) {
             return R(false, e.what());
         } catch(std::exception& e) {
@@ -274,7 +272,7 @@ auto exception_fail_safe(F func)  {
 }
 ```
 
-This decorator returns an `optional_type` which for our purposes is very crude but allows us to check if the return value of the function was OK or if an exception was thrown. If it was, we want to see what it is. We declare the lambda to share the same return value as the closure with `-> optional_type<decltype(func(args...))>`. We use the same try-catch as before but supply different constructors for our `optional_type`.
+This decorator returns an `optional_type` which for our purposes is very crude but allows us to check if the return value of the function was OK or if an exception was thrown. If it was, we want to see what it is. We declare the lambda to share the same return value as the closure with `-> optional_type<decltype(func(std::forward<decltype(args)>(args)...))>`. We use the same try-catch as before but supply different constructors for our `optional_type`.
 
 We now want to use this decorator on our `double apple::calculate_cost(int, double)` member function. We cannot change what exists, but we can turn it into a functor using `std::bind`.
 
@@ -300,9 +298,9 @@ The last example was not reusable. It was bound to exactly one object. Let's ref
 
 ```cpp
 template<typename F>
-auto visit_apples(F func) {
-    return [func](apples& a, auto... args) {
-        return (a.*func)(args...);
+auto visit_apples(const F& func) {
+    return [func](apples& a, auto&&... args) {
+        return (a.*func)(std::forward<decltype(args)>(args)...);
     };
 }
 ```
@@ -321,7 +319,7 @@ Crude but proves a point. We've basically reinvented a visitor pattern. Our deco
 
 We can completely take advantage of this functional-like syntax and have all our output decorators return the result value as well.
 
-[goto godbolt](https://godbolt.org/z/5OzQZ9)
+[goto godbolt](https://godbolt.org/z/w4P9V-)
 
 ```cpp
 // Different prices for different apples
@@ -369,6 +367,7 @@ And as we discovered at the beginning, lambdas with capture do not dissolve into
 
 With all the complexities at hand, this task non-trivial. 
 
-Additionally, there's no nice syntax at hand for C++ to wrap a function around another at definition without the use of magic macros or mocs. ~~We're left to wrap functions at run-time.~~ Thanks to [robin-m](https://www.reddit.com/r/cpp/comments/cm2g4l/python_function_decorators_in_modern_c_without/evzkwtu/?context=3) for pointing out that decorators can be made at compile-time after all!
+_update!_
+I tackled this design [here](https://github.com/TheMaverickProgrammer/C-Python-Like-Class-Member-Decorators) making it possible for classes to have re-assignable member function types.
 
 This challenge took about 2 days plugged in and was a lot of fun. I learned a lot on the way and discovered something pretty useful. Thanks for reading!
