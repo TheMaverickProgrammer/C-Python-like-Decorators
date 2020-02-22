@@ -1,4 +1,4 @@
-// practical examples of modern C++ decorators
+// practical example of modern C++ decorators
 // view the full tutorial at https://github.com/TheMaverickProgrammer/C-Python-like-Decorators
 
 #include <iostream>
@@ -17,10 +17,10 @@ using namespace std;
 // see https://github.com/TheMaverickProgrammer/C-Python-like-Decorators/blob/master/README.md#further-applications-decorating-member-functions
 // for a more robust example
 template<typename F>
-auto exception_fail_safe(F func) {
-    return [func](auto... args) {
+auto exception_fail_safe(const F& func) {
+    return [func](auto&&... args) {
         try {
-            func(args...);
+            func(std::forward<decltype(args)>(args)...);
         } catch(std::iostream::failure& e) {
             return std::string("Exception caught: ") + e.what();
         } catch(...) {
@@ -33,18 +33,18 @@ auto exception_fail_safe(F func) {
 }
 
 template<typename F>
-auto output(F func) {
-    return [func](auto... args) {
-        std::cout << func(args...) << std::endl;
+auto output(const F& func) {
+    return [func](auto&&... args) {
+        std::cout << func(std::forward<decltype(args)>(args)...) << std::endl;
     };
 }
 
 template<typename F>
-auto log_time(F func) {
-    return [func](auto... args) {
+auto log_time(const F& func) {
+    return [func](auto&&... args) {
         auto now = std::chrono::system_clock::now();
         std::time_t time = std::chrono::system_clock::to_time_t(now); 
-        func(args...);
+        func(std::forward<decltype(args)>(args)...);
         std::cout << "> Logged at " << std::ctime(&time) << std::endl;
     };
 }
