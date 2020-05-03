@@ -16,9 +16,9 @@ Works across MSVC, GNU CC, and Clang compilers
 [reusable member function demo](https://godbolt.org/z/w4P9V-)
 
 # The goal
-Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called decorator functions. 
+Python has a nice feature that allows function definitions to be wrapped by other existing functions. "Wrapping" consists of taking a function in as an argument and returning a new aggregated function composed of the input function and the wrapper function. The wrapper functions themselves are called 'decorator' functions because they decorate, or otherwise extend, the original input function's behavior. 
 
-The syntax for this in python is simply called "decorators" and begin with `@`. A python decorator would look like this:
+The syntax for this in python begin with `@` immediately followed by the decorator function name. On the next line, a brand new function definition begins. The result is that the new function will be automatically decorated by the function we declared with the `@` symbol. A python decorator would look like this:
 
 ```python
 def stars(func):
