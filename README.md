@@ -351,6 +351,20 @@ There was an error: apples must weigh more than 0 ounces
 > Logged at Mon Aug  5 02:17:10 2019
 ```
 
+# Class visitor
+Let's make the class visit decorator function visit any object type and not limited to just apples. We could write one as such:
+
+```cpp
+template<typename F>
+auto visit_class(const F& func) {
+    return [func](auto& obj, auto&&... args) {
+        return (obj.*func)(std::forward<decltype(args)>(args)...);
+    };
+}
+```
+
+Now we can visit any class type member function.
+
 # After-thoughts
 Unlike python, C++ doesn't let us redefine functions on the fly, but we could get closer to python syntax if we had some kind of intermediary functor type that we could reassign e.g.
 
