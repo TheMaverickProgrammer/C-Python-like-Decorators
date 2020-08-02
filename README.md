@@ -356,10 +356,11 @@ In python, we have a similar decorator to properly decorate member functions: @c
 
 We needed to pass the instance of the object into the decorator chain and with a quick re-write we can make this class visitor decorate function universal.
 
-Simply swap out apples& for auto&:
+Simply swap out `apples&` for `auto&`:
 
 [goto godbolt](https://godbolt.org/z/nQpdfN)
 
+```cpp
 ////////////////////////////////////
 //    visitor function            //
 ////////////////////////////////////
